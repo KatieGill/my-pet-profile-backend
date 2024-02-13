@@ -5,6 +5,61 @@ import { prisma } from "../../prisma/db.setup";
 
 export const hospitalController = Router();
 
+//get all hospitals
+hospitalController.get("/hospital", async (req, res) => {
+  const allHospitals = await prisma.hospital.findMany().catch(() => null);
+  if (allHospitals === null) {
+    return res.status(500).json({ message: "Unable to fetch all hospitals" });
+  }
+  return res.status(200).json(allHospitals);
+});
+
+//get user hospital favorites
+hospitalController.get("/hospital-favorite/:userId", async (req, res) => {
+  const userId = +req.params.userId;
+  const userFavorites = await prisma.hospitalFavorite
+    .findMany({
+      where: {
+        userId,
+      },
+      include: {
+        hospital: true,
+      },
+    })
+    .catch(() => null);
+  if (userFavorites === null) {
+    return res
+      .status(500)
+      .json({ message: "Unable to fetch hospital favorites" });
+  }
+  return res.status(200).json(userFavorites);
+});
+
+//create hospital favorite
+hospitalController.post(
+  "/hospital-favorite",
+  validateRequest({
+    body: z.object({ userId: z.number(), hospitalId: z.number() }),
+  }),
+  async (req, res) => {
+    const { userId, hospitalId } = req.body;
+    const hospitalFavorite = await prisma.hospitalFavorite
+      .create({
+        data: {
+          userId,
+          hospitalId,
+        },
+      })
+      .catch(() => null);
+    if (hospitalFavorite === null) {
+      return res
+        .status(500)
+        .json({ message: "Unable to create hospital favorite" });
+    }
+    return res.status(201).json(hospitalFavorite);
+  }
+);
+
 //delete hospital favorite
 hospitalController.delete("/hospital-favorite/:id", async (req, res) => {
   const id = +req.params.id;
@@ -16,55 +71,27 @@ hospitalController.delete("/hospital-favorite/:id", async (req, res) => {
     })
     .catch(() => null);
   if (favoriteDeleted === null) {
-    return res.status(204).json({ error: "No content" });
+    return res
+      .status(500)
+      .json({ message: "Unable to delete hospital favorite" });
   }
-  return res.status(200).json({ message: "Favorite deleted" });
+  return res.status(200).json({ message: "Hospital favorite deleted" });
 });
 
-//get user hospital favorites
-hospitalController.get("/hospital-favorite/:userId", async (req, res) => {
+//get user hospital notes
+hospitalController.get("/hospital-note/:userId", async (req, res) => {
   const userId = +req.params.userId;
-  const userFavorites = await prisma.hospitalFavorite.findMany({
-    where: {
-      userId,
-    },
-    include: {
-      hospital: true,
-    },
-  });
-  return res.status(200).json(userFavorites);
-});
-
-//create hospital favorite
-hospitalController.post(
-  "/hospital-favorite",
-  validateRequest({
-    body: z.object({ userId: z.number(), hospitalId: z.number() }),
-  }),
-  (req, res) => {
-    const { userId, hospitalId } = req.body;
-    return prisma.hospitalFavorite
-      .create({
-        data: {
-          userId,
-          hospitalId,
-        },
-      })
-      .then((favorite) => res.status(201).json(favorite))
-      .catch((e) => {
-        console.error(e);
-        return res.status(500);
-      });
+  const hospitalNotes = await prisma.hospitalNote
+    .findMany({
+      where: {
+        userId,
+      },
+    })
+    .catch(() => null);
+  if (hospitalNotes === null) {
+    return res.status(500).json({ message: "Unable to fetch hospital notes" });
   }
-);
-
-//get all hospitals
-hospitalController.get("/hospital", async (req, res) => {
-  const allHospitals = await prisma.hospital.findMany().catch(() => null);
-  if (allHospitals === null) {
-    return res.status(204).json({ error: "No content" });
-  }
-  return res.status(200).json({ allHospitals });
+  return res.status(200).json(hospitalNotes);
 });
 
 //create hospital note
@@ -77,39 +104,23 @@ hospitalController.post(
       note: z.string(),
     }),
   }),
-  (req, res) => {
-    const { userId, hospitalId, note } = req.body;
-    return prisma.hospitalNote
+  async (req, res) => {
+    const hospitalNote = await prisma.hospitalNote
       .create({
         data: {
-          userId,
-          hospitalId,
-          note,
+          ...req.body,
         },
       })
-      .then((note) => res.status(201).json(note))
-      .catch((e) => {
-        console.error(e);
-        return res.status(500);
-      });
+      .catch(() => null);
+    if (hospitalNote === null) {
+      return res
+        .status(500)
+        .json({ message: "Unable to create hospital note" });
+    }
+
+    return res.status(201).json(hospitalNote);
   }
 );
-
-//get user hospital notes
-hospitalController.get("/hospital-note/:userId", (req, res) => {
-  const userId = +req.params.userId;
-  return prisma.hospitalNote
-    .findMany({
-      where: {
-        userId,
-      },
-    })
-    .then((notes) => res.status(201).json(notes))
-    .catch((e) => {
-      console.error(e);
-      return res.status(500);
-    });
-});
 
 //update hospital note
 hospitalController.patch(
@@ -117,19 +128,18 @@ hospitalController.patch(
   validateRequest({ body: z.object({ note: z.string() }) }),
   async (req, res) => {
     const id = +req.params.noteId;
-    const { note } = req.body;
     const updatedNote = await prisma.hospitalNote
       .update({
         where: {
           id,
         },
         data: {
-          note,
+          ...req.body,
         },
       })
       .catch(() => null);
     if (updatedNote === null) {
-      return res.status(500).json({ error: "Note not updated" });
+      return res.status(500).json({ message: "Unable to update note" });
     }
     return res.status(201).json(updatedNote);
   }
@@ -146,7 +156,7 @@ hospitalController.delete("/hospital-note/:noteId", async (req, res) => {
     })
     .catch(() => null);
   if (deletedNote === null) {
-    return res.status(204).json({ error: "No content" });
+    return res.status(500).json({ message: "Unable to delete hospital note" });
   }
-  return res.status(201).json({ message: "Note deleted" });
+  return res.status(200).json({ message: "Deleted hospital note" });
 });

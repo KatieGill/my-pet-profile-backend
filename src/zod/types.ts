@@ -3,7 +3,7 @@ import { z } from "zod";
 export const userSchema = z.object({
   id: z.number(),
   username: z.string(),
-  password: z.string(),
+  passwordHash: z.string(),
 });
 
 export const petSchema = z.object({
@@ -33,9 +33,13 @@ export const authenticatedUserDataSchema = z.object({
   id: z.number(),
   username: z.string(),
   passwordHash: z.string(),
-  pets: z.array(petSchema),
-  hospitalFavorites: z.array(hospitalFavoriteSchema),
-  hospitalNotes: z.array(hospitalNoteSchema),
+});
+
+export const jwtInfoSchema = z.object({
+  id: z.number(),
+  username: z.string(),
+  iat: z.number(),
 });
 
 export type AuthenticatedUserData = z.infer<typeof authenticatedUserDataSchema>;
+export type User = z.infer<typeof userSchema>;
