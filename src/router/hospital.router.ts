@@ -79,7 +79,7 @@ hospitalController.delete("/hospital-favorite/:id", async (req, res) => {
 });
 
 //get user hospital notes
-hospitalController.get("/hospital-note/:userId", async (req, res) => {
+hospitalController.get("/hospital-notes/:userId", async (req, res) => {
   const userId = +req.params.userId;
   const hospitalNotes = await prisma.hospitalNote
     .findMany({
@@ -92,6 +92,29 @@ hospitalController.get("/hospital-note/:userId", async (req, res) => {
     return res.status(500).json({ message: "Unable to fetch hospital notes" });
   }
   return res.status(200).json(hospitalNotes);
+});
+
+//get current hospital note
+hospitalController.get("/hospital-note/:hospitalNoteId", async (req, res) => {
+  const id = +req.params.hospitalNoteId;
+  const hospitalNote = await prisma.hospitalNote
+    .findFirst({
+      where: {
+        id,
+      },
+      include: {
+        hospital: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    })
+    .catch(() => null);
+  if (hospitalNote === null) {
+    return res.status(500).json({ message: "Unable to fetch hospital note" });
+  }
+  return res.status(200).json(hospitalNote);
 });
 
 //create hospital note

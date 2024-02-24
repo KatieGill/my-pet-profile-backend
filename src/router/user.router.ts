@@ -153,3 +153,20 @@ userController.delete("/user/:userId", authMiddleware, async (req, res) => {
   }
   return res.status(200).json({ message: "User profile deleted" });
 });
+
+//get user by username
+userController.get("/user/find-user/:username", async (req, res) => {
+  const username = req.params.username;
+  const usernameExists = await prisma.user
+    .findFirst({
+      where: {
+        username,
+      },
+    })
+    .catch(() => null);
+  if (usernameExists === null) {
+    return res.status(400).json({ message: "Username does not exist" });
+  }
+  const userInformation = createUnsecuredUserInformation(usernameExists);
+  return res.status(200).json(userInformation);
+});

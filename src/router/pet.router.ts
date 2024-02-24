@@ -6,7 +6,7 @@ import { validateRequest } from "zod-express-middleware";
 export const petController = Router();
 
 //get pets
-petController.get("/pet/:userId", async (req, res) => {
+petController.get("/pet/user-pets/:userId", async (req, res) => {
   const userId = +req.params.userId;
   const pets = await prisma.pet
     .findMany({
@@ -19,6 +19,24 @@ petController.get("/pet/:userId", async (req, res) => {
     return res.status(500).json({ message: "Unable to fetch user pets" });
   }
   return res.status(200).json(pets);
+});
+
+//get current pet info
+petController.get("/pet/:petId", async (req, res) => {
+  const id = +req.params.petId;
+  const petInfo = await prisma.pet
+    .findFirst({
+      where: { id },
+      include: {
+        diets: true,
+        medications: true,
+      },
+    })
+    .catch(() => null);
+  if (petInfo === null) {
+    return res.status(500).json({ message: "Unable to get pet information" });
+  }
+  return res.status(200).json(petInfo);
 });
 
 //post pet
@@ -98,7 +116,7 @@ petController.delete("/pet/:petId", async (req, res) => {
 });
 
 //get pet diets
-petController.get("/diet/:petId", async (req, res) => {
+petController.get("/diets/:petId", async (req, res) => {
   const petId = +req.params.petId;
   const diets = await prisma.diet
     .findMany({
@@ -111,6 +129,22 @@ petController.get("/diet/:petId", async (req, res) => {
     return res.status(500).json({ message: "Unable to fetch diets" });
   }
   return res.status(200).json(diets);
+});
+
+//get current diet
+petController.get("/diet/:dietId", async (req, res) => {
+  const id = +req.params.dietId;
+  const diet = await prisma.diet
+    .findFirst({
+      where: {
+        id,
+      },
+    })
+    .catch(() => null);
+  if (diet === null) {
+    return res.status(500).json({ message: "Unable to fetch diet" });
+  }
+  return res.status(200).json(diet);
 });
 
 //create diet
@@ -186,7 +220,7 @@ petController.delete("/diet/:dietId", async (req, res) => {
 });
 
 //get pet medications
-petController.get("/medication/:petId", async (req, res) => {
+petController.get("/medications/:petId", async (req, res) => {
   const petId = +req.params.petId;
   const medications = await prisma.medication
     .findMany({
@@ -199,6 +233,22 @@ petController.get("/medication/:petId", async (req, res) => {
     return res.status(500).json({ message: "Unable to fetch medications" });
   }
   return res.status(200).json(medications);
+});
+
+//get current medication
+petController.get("/medication/:medicationId", async (req, res) => {
+  const id = +req.params.medicationId;
+  const medication = await prisma.medication
+    .findFirst({
+      where: {
+        id,
+      },
+    })
+    .catch(() => null);
+  if (medication === null) {
+    return res.status(500).json({ message: "Unable to fetch medication" });
+  }
+  return res.status(200).json(medication);
 });
 
 //create medication
