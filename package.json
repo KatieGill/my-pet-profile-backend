@@ -4,8 +4,10 @@
   "description": "Database for My Pet Profile",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon",
-    "postinstall": "prisma generate",
+    "build": "prisma migrate reset -f",
+    "prisma:generate": "prisma generate",
+    "dev": "PORT=3000 node src/app.ts",
+    "start": "node src/index.js",
     "seed": "ts-node prisma/seed.ts"
   },
   "repository": {
