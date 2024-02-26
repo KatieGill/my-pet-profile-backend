@@ -7,8 +7,8 @@
   "scripts": {
     "build": "prisma migrate reset -f",
     "prisma:generate": "prisma generate",
-    "dev": "PORT=3000 node src/app.js",
-    "start": "node src/app.js",
+    "dev": "PORT=3000 node build/app.js",
+    "start": "node build/app.js",
     "seed": "ts-node prisma/seed.ts"
   },
   "repository": {
