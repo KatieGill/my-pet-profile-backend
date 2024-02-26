@@ -6,7 +6,8 @@
   "scripts": {
     "build": "prisma generate && prisma migrate deploy",
     "dev": "nodemon",
-    "start": "ts-node --esm src/app.ts",
+    "compile": "tsc",
+    "start": "npm run compile && node ./build/app.js",
     "seed": "ts-node prisma/seed.ts"
   },
   "repository": {
