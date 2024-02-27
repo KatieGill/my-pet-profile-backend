@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "Database for My Pet Profile",
   "main": "index.js",
+  "engines": {
+    "node": "v18.16.1"
+  },
   "scripts": {
     "build": "prisma generate && prisma migrate deploy",
     "dev": "nodemon",
     "compile": "tsc",
-    "start": "npm run compile && ts-node ./build/app.js",
+    "start": "npm run compile && node ./build/app.js",
     "seed": "ts-node prisma/seed.ts"
   },
   "repository": {

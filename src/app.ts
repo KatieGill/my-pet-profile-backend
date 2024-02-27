@@ -8,6 +8,7 @@ import { petController } from "./router/pet.router";
 import { User } from "./zod/types";
 
 const app = express();
+const PORT = process.env.PORT || 8000;
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -38,4 +39,4 @@ app.use(userController);
 app.use(hospitalController);
 app.use(petController);
 
-app.listen(3000);
+app.listen(PORT, () => console.log(`Listening on ${PORT}`));
