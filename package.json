@@ -10,7 +10,7 @@
     "build": "prisma generate && prisma migrate deploy",
     "dev": "nodemon",
     "compile": "tsc",
-    "start": "npm run compile && node ./build/app.js",
+    "start": "npm run compile && node ./build/src/app.js",
     "seed": "ts-node prisma/seed.ts"
   },
   "repository": {

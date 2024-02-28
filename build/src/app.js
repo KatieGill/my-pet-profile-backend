@@ -11,9 +11,8 @@ const user_router_1 = require("./router/user.router");
 const hospital_router_1 = require("./router/hospital.router");
 const pet_router_1 = require("./router/pet.router");
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 8000;
 const corsOptions = {
-    origin: "http://localhost:5173",
+    origin: "https://my-pet-profile.vercel.app",
     credentials: true,
 };
 app.use((0, cors_1.default)(corsOptions));
@@ -23,5 +22,5 @@ app.use(authentication_router_1.authController);
 app.use(user_router_1.userController);
 app.use(hospital_router_1.hospitalController);
 app.use(pet_router_1.petController);
-app.listen(PORT, () => console.log(`Listening on ${PORT}`));
+app.listen(8000);
 //# sourceMappingURL=app.js.map

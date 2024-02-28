@@ -8,7 +8,6 @@ import { petController } from "./router/pet.router";
 import { User } from "./zod/types";
 
 const app = express();
-const PORT = process.env.PORT || 8000;
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -27,7 +26,7 @@ declare global {
 }
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: "https://my-pet-profile.vercel.app",
   credentials: true,
 };
 
@@ -39,4 +38,4 @@ app.use(userController);
 app.use(hospitalController);
 app.use(petController);
 
-app.listen(PORT, () => console.log(`Listening on ${PORT}`));
+app.listen(8000);
