@@ -1,2 +1,2 @@
-Run `npx nodemon` to run server
-Run `npm run seed` to seed database
+# MY PET PROFILE BACKEND
+This backend was created for My Pet Profile React app. It utilizes Express, Prisma and TypeScript with a PostgreSQL database. 
